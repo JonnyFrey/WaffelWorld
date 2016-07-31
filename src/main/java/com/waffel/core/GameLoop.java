@@ -20,8 +20,6 @@ public class GameLoop implements Runnable {
     private StateController controller;
     private GameScreen screen;
 
-    Graphics2D g;
-
     public GameLoop() {
         screen = new GameScreen();
         controller = new StateController();
@@ -30,7 +28,6 @@ public class GameLoop implements Runnable {
     @Override
     public void run() {
 
-        g = screen.getGraphics();
         long start;
         long time;
         long wait;
@@ -38,11 +35,10 @@ public class GameLoop implements Runnable {
             start = System.nanoTime();
 
             controller.update();
-
+            Graphics2D g = screen.getGraphics();
 
             controller.draw(g);
             screen.drawToScreen();
-            g.dispose();
 
             time = System.nanoTime() - start;
 
