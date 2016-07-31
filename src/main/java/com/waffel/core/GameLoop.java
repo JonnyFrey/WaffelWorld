@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Jonny on 7/18/16.
@@ -19,6 +20,8 @@ public class GameLoop implements Runnable {
     private StateController controller;
     private GameScreen screen;
 
+    Graphics2D g;
+
     public GameLoop() {
         screen = new GameScreen();
         controller = new StateController();
@@ -27,6 +30,7 @@ public class GameLoop implements Runnable {
     @Override
     public void run() {
 
+        g = screen.getGraphics();
         long start;
         long time;
         long wait;
@@ -35,14 +39,14 @@ public class GameLoop implements Runnable {
 
             controller.update();
 
-            Graphics2D g = screen.getGraphics();
+
             controller.draw(g);
             screen.drawToScreen();
             g.dispose();
 
             time = System.nanoTime() - start;
 
-            wait = TARGET - time / 1000000;
+            wait = TARGET - TimeUnit.NANOSECONDS.toMillis(time);
             if (wait < 0) {
                 wait = 5;
             }
