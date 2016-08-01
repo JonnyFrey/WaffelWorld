@@ -4,6 +4,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Jonny on 7/18/16.
@@ -17,11 +20,11 @@ public class GameLoop implements Runnable {
     private static final long TARGET = 1000 / FPS;
 
     private StateController controller;
-    private GameScreen screen;
+    private Lock lock;
 
     public GameLoop() {
-        screen = new GameScreen();
         controller = new StateController();
+        lock = new ReentrantLock();
     }
 
     @Override
@@ -33,37 +36,32 @@ public class GameLoop implements Runnable {
         while (RUN) {
             start = System.nanoTime();
 
+            lock.lock();
             controller.update();
-
-            Graphics2D g = screen.getGraphics();
-            controller.draw(g);
-            screen.drawToScreen();
-            g.dispose();
+            lock.unlock();
 
             time = System.nanoTime() - start;
 
-            wait = TARGET - time / 1000000;
-            if (wait < 0) {
-                wait = 5;
-            }
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                LOGGER.error(e);
+            wait = TARGET - TimeUnit.NANOSECONDS.toMillis(time);
+            if (wait > 0) {
+                try {
+                    Thread.sleep(wait);
+                } catch (InterruptedException e) {
+                    LOGGER.error(e);
+                }
             }
         }
-        LOGGER.info("Game Is Ending. Have a nice Day");
     }
 
     public static synchronized void endGame() {
-        LOGGER.error("End Game has been Called");
         RUN = false;
     }
 
-    public static void main(String[] args) {
-        Thread mainGameThread = new Thread(new GameLoop());
-        mainGameThread.start();
-        mainGameThread.setName("Main Game Thread");
+    public void drawController(Graphics2D g) {
+        if (lock.tryLock()) {
+            controller.draw(g);
+            lock.unlock();
+        }
     }
 
 }
