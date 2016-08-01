@@ -67,7 +67,7 @@ public class ConstantRunnable<T> implements Runnable {
     }
 
     public void printLogs(long time, long wait) {
-        if (framesPerLog != 0 && --frameCount <= 0) {
+        if (framesPerLog >= 0 && --frameCount <= 0) {
             OptionalDouble timeAvg = timeCount.parallelStream().mapToLong(Long::byteValue).average();
             OptionalDouble waitAvg = waitCount.parallelStream().mapToLong(Long::byteValue).average();
             timeAvg.ifPresent(value -> log("Time Avg : " + DF2.format(value) + " ms"));
@@ -86,7 +86,7 @@ public class ConstantRunnable<T> implements Runnable {
         this.frameCount = framesPerLog;
     }
 
-    public void endRun() {
+    public synchronized void endRun() {
         run = false;
     }
 
