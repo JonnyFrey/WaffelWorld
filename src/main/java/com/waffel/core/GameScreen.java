@@ -1,23 +1,20 @@
 package com.waffel.core;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.beust.jcommander.internal.Lists;
+import com.waffel.util.ConstantRunnable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 /**
  * Created by Jonny on 7/28/16.
  */
-public class GameScreen implements Runnable {
+public class GameScreen {
 
-    private static final Logger LOGGER = LogManager.getLogger(GameScreen.class);
     private static final String TITLE = "Waffel World";
     private static final JFrame FRAME = new JFrame(TITLE);
     private static final JPanel MAIN_SCREEN = new JPanel();
@@ -25,12 +22,9 @@ public class GameScreen implements Runnable {
     public static final int INITAL_WIDTH = 960;
     public static final int INITAL_HEIGHT = INITAL_WIDTH * 3 / 4;
 
-    private static boolean RUN = true;
-    private static final long FPS = 60;
-    private static final long TARGET = 1000 / FPS;
+    private static List<ConstantRunnable> killThreads = Lists.newArrayList();
 
-    private static GameLoop gameLoop;
-
+    private GameLoop gameLoop;
     private BufferedImage image;
 
     static {
@@ -42,19 +36,19 @@ public class GameScreen implements Runnable {
         FRAME.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                GameScreen.endGame();
-                GameLoop.endGame();
+                killThreads.forEach(ConstantRunnable::endRun);
                 FRAME.dispose();
             }
         });
     }
 
-    public GameScreen() {
+    public GameScreen(GameLoop gameLoop) {
         FRAME.setVisible(true);
         MAIN_SCREEN.setFocusable(true);
         MAIN_SCREEN.requestFocus();
 
         image = new BufferedImage(INITAL_WIDTH, INITAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        this.gameLoop = gameLoop;
     }
 
     public void drawToScreen() {
@@ -69,43 +63,12 @@ public class GameScreen implements Runnable {
         return (Graphics2D) image.getGraphics();
     }
 
-    public static synchronized void endGame() {
-        RUN = false;
+    public GameScreen addConstantRunnable(ConstantRunnable runnable) {
+        killThreads.add(runnable);
+        return this;
     }
 
-    @Override
-    public void run() {
-
-        long start;
-        long time;
-        long wait;
-
-        while (RUN) {
-            start = System.nanoTime();
-
-            Graphics2D g = getGraphics();
-            gameLoop.drawController(g);
-            drawToScreen();
-            g.dispose();
-
-            time = System.nanoTime() - start;
-
-            wait = TARGET - TimeUnit.NANOSECONDS.toMillis(time);
-            if (wait > 0) {
-                try {
-                    Thread.sleep(wait);
-                } catch (InterruptedException e) {
-                    LOGGER.error(e);
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        gameLoop = new GameLoop();
-        ExecutorService service =  Executors.newFixedThreadPool(2);
-        service.submit(gameLoop);
-        service.submit(new GameScreen());
-        service.shutdown();
+    public GameLoop getGameLoop() {
+        return gameLoop;
     }
 }
