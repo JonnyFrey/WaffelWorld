@@ -5,10 +5,11 @@ import com.waffel.core.GameScreen;
 /**
  * Created by Jonny on 7/31/16.
  */
-public class Background extends BasicGUI {
+public class Background extends Entity {
 
     @Override
-    public void fixBounds() {
+    public void update() {
+        super.update();
         if (x > getWidth()) {
             x = -getWidth();
         }
