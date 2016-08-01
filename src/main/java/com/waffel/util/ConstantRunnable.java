@@ -20,8 +20,8 @@ public class ConstantRunnable<T> implements Runnable {
     private static final DecimalFormat DF2 = new DecimalFormat(".##");
 
     private boolean run = true;
-    private final long FPS;
-    private final long TARGET;
+    private final long fps;
+    private final long target;
     private final Consumer<T> apply;
     private final T contex;
 
@@ -32,8 +32,8 @@ public class ConstantRunnable<T> implements Runnable {
 
     public ConstantRunnable(long targetTime, Consumer<T> apply, T contex) {
         Preconditions.checkArgument(targetTime >= 0);
-        FPS = targetTime;
-        TARGET = 1000 / FPS;
+        fps = targetTime;
+        target = 1000 / fps;
         this.apply = apply;
         this.contex = contex;
     }
@@ -54,7 +54,7 @@ public class ConstantRunnable<T> implements Runnable {
 
             time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 
-            wait = TARGET - time;
+            wait = target - time;
             if (wait > 0) {
                 try {
                     Thread.sleep(wait);

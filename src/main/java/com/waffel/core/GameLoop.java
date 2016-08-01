@@ -1,8 +1,6 @@
 package com.waffel.core;
 
 import com.waffel.util.ConstantRunnable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.util.concurrent.ExecutorService;
