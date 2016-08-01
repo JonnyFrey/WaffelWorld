@@ -2,7 +2,7 @@ package com.waffel.states;
 
 import com.waffel.core.State;
 import com.waffel.model.Background;
-import com.waffel.model.BasicGUI;
+import com.waffel.model.Entity;
 import com.waffel.model.RandomBall;
 import com.waffel.view.DrawMaster;
 import com.waffel.view.Images;
@@ -54,7 +54,7 @@ public class MainMenuState implements State {
         clouds.update();
         mountains.update();
         sky.update();
-        randomBallList.parallelStream().forEach(BasicGUI::update);
+        randomBallList.parallelStream().forEach(Entity::update);
     }
 
     @Override

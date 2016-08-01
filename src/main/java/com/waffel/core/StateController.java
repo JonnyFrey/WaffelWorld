@@ -8,8 +8,8 @@ import java.awt.*;
  * Created by Jonny on 7/31/16.
  */
 public class StateController {
-    private State[] states;
-    private int current;
+    private static State[] states;
+    private static int current;
 
     public StateController() {
         states = new State[Stage.values().length];
@@ -25,7 +25,7 @@ public class StateController {
      * @param stage  The Stage that contains the State to be loaded
      * @param unload if the current State should be kept in memory
      */
-    public void loadState(Stage stage, boolean unload) {
+    public static synchronized void loadState(Stage stage, boolean unload) {
         states[stage.ordinal()] = null;
         setState(stage, unload);
     }
@@ -38,7 +38,7 @@ public class StateController {
      * @param stage  The Stage that contains the State to be loaded
      * @param unload if the current State should be kept in memory
      */
-    public void setState(Stage stage, boolean unload) {
+    public static synchronized void setState(Stage stage, boolean unload) {
         if (unload) {
             states[current] = null;
         }

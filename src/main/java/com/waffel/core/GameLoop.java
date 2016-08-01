@@ -1,70 +1,70 @@
 package com.waffel.core;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.waffel.util.ConstantRunnable;
 
 import java.awt.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Jonny on 7/18/16.
  */
-public class GameLoop implements Runnable {
+public class GameLoop {
 
-    private static final Logger LOGGER = LogManager.getLogger(GameLoop.class);
-
-    private static boolean RUN = true;
-    private static final long FPS = 60;
-    private static final long TARGET = 1000 / FPS;
+    private static final int FPS = 60;
 
     private StateController controller;
-    private GameScreen screen;
+    private Lock lock;
 
     public GameLoop() {
-        screen = new GameScreen();
         controller = new StateController();
+        lock = new ReentrantLock();
     }
 
-    @Override
-    public void run() {
-
-        long start;
-        long time;
-        long wait;
-        while (RUN) {
-            start = System.nanoTime();
-
-            controller.update();
-
-            Graphics2D g = screen.getGraphics();
+    public void drawController(Graphics2D g) {
+        if (lock.tryLock()) {
             controller.draw(g);
-            screen.drawToScreen();
-            g.dispose();
-
-            time = System.nanoTime() - start;
-
-            wait = TARGET - TimeUnit.NANOSECONDS.toMillis(time);
-            if (wait < 0) {
-                wait = 5;
-            }
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                LOGGER.error(e);
-            }
+            lock.unlock();
         }
-        LOGGER.info("Game Is Ending. Have a nice Day");
     }
 
-    public static synchronized void endGame() {
-        LOGGER.error("End Game has been Called");
-        RUN = false;
+    private static ConstantRunnable<GameLoop> getGameLoopRunnable() {
+        GameLoop gameLoop = new GameLoop();
+        return new ConstantRunnable<>(FPS, gameLoop1 -> {
+            gameLoop.lock.lock();
+            gameLoop.controller.update();
+            gameLoop.lock.unlock();
+        }, gameLoop);
+    }
+
+    private static ConstantRunnable<GameScreen> getGraphicRunnable(GameLoop gameLoop) {
+        GameScreen gameScreen = new GameScreen(gameLoop);
+        return new ConstantRunnable<>(FPS, gameScreen1 -> {
+            Graphics2D g = gameScreen1.getGraphics();
+            gameScreen1.getGameLoop().drawController(g);
+            gameScreen1.drawToScreen();
+            g.dispose();
+        }, gameScreen);
     }
 
     public static void main(String[] args) {
-        Thread mainGameThread = new Thread(new GameLoop());
-        mainGameThread.start();
-        mainGameThread.setName("Main Game Thread");
+        ConstantRunnable<GameLoop> gameLoopConstantRunnable = getGameLoopRunnable();
+        ConstantRunnable<GameScreen> gameScreenConstantRunnable =
+                getGraphicRunnable(gameLoopConstantRunnable.getContex());
+
+        gameLoopConstantRunnable.enableLogging(60);
+        gameScreenConstantRunnable.enableLogging(60);
+
+        gameScreenConstantRunnable.getContex()
+                .addConstantRunnable(gameScreenConstantRunnable)
+                .addConstantRunnable(gameLoopConstantRunnable);
+
+        ExecutorService service = Executors.newFixedThreadPool(2);
+        service.submit(gameLoopConstantRunnable);
+        service.submit(gameScreenConstantRunnable);
+        service.shutdown();
     }
 
 }

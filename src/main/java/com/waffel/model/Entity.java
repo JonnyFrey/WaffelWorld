@@ -5,19 +5,21 @@ import com.waffel.view.Drawable;
 /**
  * Created by Jonny on 7/31/16.
  */
-public abstract class BasicGUI implements Drawable {
+public abstract class Entity implements Drawable {
 
+    //Position
     protected double x;
     protected double y;
 
+    //Speed
     protected double speedX;
     protected double speedY;
 
-    public BasicGUI() {
+    public Entity() {
         this(0, 0);
     }
 
-    public BasicGUI(int x, int y) {
+    public Entity(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -41,9 +43,5 @@ public abstract class BasicGUI implements Drawable {
     public void update() {
         x += speedX;
         y += speedY;
-        fixBounds();
     }
-
-    public abstract void fixBounds();
-
 }

@@ -5,7 +5,7 @@ import com.waffel.core.GameScreen;
 /**
  * Created by Jonny on 7/31/16.
  */
-public class RandomBall extends BasicGUI {
+public class RandomBall extends Entity {
 
     public RandomBall() {
         this.x = (int) (Math.random() * GameScreen.INITAL_WIDTH);
@@ -24,7 +24,8 @@ public class RandomBall extends BasicGUI {
     }
 
     @Override
-    public void fixBounds() {
+    public void update() {
+        super.update();
         if (x > GameScreen.INITAL_WIDTH - getWidth()) {
             x = (double) GameScreen.INITAL_WIDTH - getWidth();
             setVector(-speedX, speedY);
