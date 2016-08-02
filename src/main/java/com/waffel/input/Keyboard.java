@@ -5,6 +5,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.*;
 
+import static com.waffel.input.Keyboard.EventType.*;
+
+
 /**
  * ssssssssssssssss
  * Created by yosephsa on 8/2/16.
@@ -16,36 +19,67 @@ public class Keyboard implements KeyListener {
 
     private static final Keyboard board = new Keyboard();
 
-    public static final boolean PRESSED = true;
-    public static final boolean RELEASED = false;
-
-    private volatile Stack<EventData> keyStack = new Stack<EventData>();
+    private volatile Stack<EventData> keyStack = new Stack<>();
     private boolean[] pressed = new boolean[255];
     private boolean[] justPressed = new boolean[255];
+    private boolean[] justReleased = new boolean[255];
+    private LinkedList<Character> justTyped = new LinkedList<>();
+
 
     private Keyboard() {
 
     }
 
     public void update() {
+        justPressed = new boolean[255];
+        justReleased = new boolean[255];
+        justTyped.clear();
+
         for (int i = 0; i < keyStack.size(); i++) {
             EventData e = keyStack.pop();
-            System.out.println(e.getKeyEvent().getKeyChar());
+            if (e.getEventType() == RELEASED && isPressed(e.getKeyEvent().getKeyCode())) {
+                justReleased[e.getKeyEvent().getKeyCode()] = true;
+                pressed[e.getKeyEvent().getKeyCode()] = false;
+            } else if (e.getEventType() == PRESSED && !isPressed(e.getKeyEvent().getKeyCode())) {
+                justPressed[e.getKeyEvent().getKeyCode()] = true;
+                pressed[e.getKeyEvent().getKeyCode()] = true;
+            } else if (e.getEventType() == TYPED)
+                justTyped.add(e.getKeyEvent().getKeyChar());
         }
+    }
+
+
+    public LinkedList getTypedCharacters() {
+        return justTyped;
+    }
+
+    public boolean isPressed(int ascii) {
+        return ascii >= 0 && ascii < pressed.length && pressed[ascii];
+    }
+
+    public boolean hasJustPressed(int ascii) {
+        return ascii >= 0 && ascii < justPressed.length && justPressed[ascii];
+    }
+
+    public boolean hasJustReleased(int ascii) {
+        return ascii >= 0 && ascii < justReleased.length && justReleased[ascii];
     }
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {
+        keyStack.push(new EventData(keyEvent, TYPED));
     }
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        keyStack.push(new EventData(keyEvent, EventType.PRESSED));
+        if (!isPressed(keyEvent.getKeyCode()))
+            keyStack.push(new EventData(keyEvent, PRESSED));
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-        keyStack.push(new EventData(keyEvent, EventType.RELEASED));
+        if (isPressed(keyEvent.getKeyCode()))
+            keyStack.push(new EventData(keyEvent, RELEASED));
     }
 
     public static Keyboard getInstence() {
