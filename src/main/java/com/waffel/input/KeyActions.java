@@ -11,7 +11,7 @@ import static com.waffel.input.KeyActions.Action.*;
 public class KeyActions {
 
     public enum Action {
-        MV_FORWARD, MV_BACKWARD, MV_RIGHT, MV_LEFT;
+        MV_FORWARD, MV_BACKWARD, MV_RIGHT, MV_LEFT, MV_BOOST;
     }
 
     private static final KeyActions instance = new KeyActions();
@@ -23,6 +23,8 @@ public class KeyActions {
         addAction(MV_BACKWARD, KeyEvent.VK_S);
         addAction(MV_RIGHT, KeyEvent.VK_D);
         addAction(MV_LEFT, KeyEvent.VK_A);
+        addAction(MV_BOOST, KeyEvent.VK_SHIFT);
+
     }
 
     public boolean isActionActive(Action a) {

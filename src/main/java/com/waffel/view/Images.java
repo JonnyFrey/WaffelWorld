@@ -17,7 +17,10 @@ public enum Images {
     //Backgrounds
     CLOUD_BACKGROUND("backgrounds/clouds.gif"),
     MOUNTAINS_BACKGROUND("backgrounds/mountains.gif"),
-    SKY_BACKGROUND("backgrounds/sky.gif");
+    SKY_BACKGROUND("backgrounds/sky.gif"),
+
+    //animals
+    Player("animals/player.gif");
 
     private String location;
     private int width;

@@ -3,6 +3,7 @@ package com.waffel.states;
 import com.waffel.core.State;
 import com.waffel.model.Background;
 import com.waffel.model.Entity;
+import com.waffel.model.Player;
 import com.waffel.model.RandomBall;
 import com.waffel.view.DrawMaster;
 import com.waffel.view.Images;
@@ -22,6 +23,7 @@ public class MainMenuState implements State {
     private Background clouds;
     private Background mountains;
     private Background sky;
+    private Player player;
 
     private List<RandomBall> randomBallList;
 
@@ -34,12 +36,14 @@ public class MainMenuState implements State {
         mountains.setVector(3, 0);
         sky = new Background();
         sky.setVector(1, 0);
+        player = new Player(100, 100);
 
         drawMaster = new DrawMaster.Builder()
                 .addStrategy(clouds, BasicImageStrategies.fullScreenDraw(Images.CLOUD_BACKGROUND))
                 .addStrategy(mountains, BasicImageStrategies.fullScreenDraw(Images.MOUNTAINS_BACKGROUND))
                 .addStrategy(sky, BasicImageStrategies.fullScreenDraw(Images.SKY_BACKGROUND))
                 .addStrategy(RandomBall.class, BasicImageStrategies.basicImageWithSizeDraw(Images.ARTIFACT))
+                .addStrategy(player, BasicImageStrategies.basicImageWithSizeDraw(Images.Player))
                 .build();
 
         randomBallList = new LinkedList<>();
@@ -54,6 +58,7 @@ public class MainMenuState implements State {
         clouds.update();
         mountains.update();
         sky.update();
+        player.update();
         randomBallList.parallelStream().forEach(Entity::update);
     }
 
@@ -63,5 +68,6 @@ public class MainMenuState implements State {
         drawMaster.draw(g, clouds);
         drawMaster.draw(g, mountains);
         drawMaster.draw(g, randomBallList);
+        drawMaster.draw(g, player);
     }
 }
