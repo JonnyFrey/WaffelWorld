@@ -1,6 +1,7 @@
 package com.waffel.core;
 
 import com.beust.jcommander.internal.Lists;
+import com.waffel.input.Keyboard;
 import com.waffel.util.ConstantRunnable;
 
 import javax.swing.*;
@@ -46,6 +47,7 @@ public class GameScreen {
         FRAME.setVisible(true);
         MAIN_SCREEN.setFocusable(true);
         MAIN_SCREEN.requestFocus();
+        FRAME.addKeyListener(Keyboard.getInstence());
 
         image = new BufferedImage(INITAL_WIDTH, INITAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
         this.gameLoop = gameLoop;

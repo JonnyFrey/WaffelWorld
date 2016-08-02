@@ -1,6 +1,7 @@
 package com.waffel.core;
 
 import com.google.common.base.Preconditions;
+import com.waffel.input.Keyboard;
 
 import java.awt.*;
 
@@ -51,6 +52,7 @@ public class StateController {
 
     public void update() {
         getState().update();
+        Keyboard.getInstence().update();
     }
 
     public void draw(Graphics2D g) {
