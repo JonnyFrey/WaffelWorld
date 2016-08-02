@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 /**
  * Created by Jonny on 7/31/16.
  */
-public class ConstantRunnable<T> implements Runnable {
+public class ConstantRunnable implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger(ConstantRunnable.class);
     private static final DecimalFormat DF2 = new DecimalFormat(".##");
@@ -22,35 +22,31 @@ public class ConstantRunnable<T> implements Runnable {
     private boolean run = true;
     private final long fps;
     private final long target;
-    private final Consumer<T> apply;
-    private final T contex;
+    private final Consumer<ConstantRunnable> apply;
 
     private List<Long> waitCount = Lists.newLinkedList();
     private List<Long> timeCount = Lists.newLinkedList();
     private int framesPerLog;
     private int frameCount;
+    private long time;
+    private long wait;
 
-    public ConstantRunnable(long targetTime, Consumer<T> apply, T contex) {
+    private String name = "Constant Runnable";
+
+    public ConstantRunnable(long targetTime, Consumer<ConstantRunnable> apply) {
         Preconditions.checkArgument(targetTime >= 0);
         fps = targetTime;
         target = 1000 / fps;
         this.apply = apply;
-        this.contex = contex;
-    }
-
-    public T getContex() {
-        return contex;
     }
 
     @Override
     public void run() {
         long start;
-        long time;
-        long wait;
         while (run) {
             start = System.nanoTime();
 
-            apply.accept(contex);
+            apply.accept(this);
 
             time = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
 
@@ -72,6 +68,7 @@ public class ConstantRunnable<T> implements Runnable {
             OptionalDouble waitAvg = waitCount.parallelStream().mapToLong(Long::byteValue).average();
             timeAvg.ifPresent(value -> log("Time Avg : " + DF2.format(value) + " ms"));
             waitAvg.ifPresent(value -> log("Wait Avg : " + DF2.format(value) + " ms"));
+//            log("Delta: " + getDelta());
             timeCount.clear();
             waitCount.clear();
             frameCount = framesPerLog;
@@ -90,8 +87,20 @@ public class ConstantRunnable<T> implements Runnable {
         run = false;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private void log(String message) {
-        LOGGER.info(contex.getClass().getSimpleName() + "\t" + message);
+        LOGGER.info(name + "\t" + message);
+    }
+
+    public double getDelta() {
+        if (wait > 0) {
+            return time + wait;
+        } else {
+            return time;
+        }
     }
 
 }

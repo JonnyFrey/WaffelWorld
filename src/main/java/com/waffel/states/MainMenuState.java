@@ -1,5 +1,6 @@
 package com.waffel.states;
 
+import com.waffel.core.GameScreen;
 import com.waffel.core.State;
 import com.waffel.model.Background;
 import com.waffel.model.Entity;
@@ -29,11 +30,11 @@ public class MainMenuState implements State {
     public void init() {
 
         clouds = new Background();
-        clouds.setVector(5, 0);
+        clouds.setVector(GameScreen.INITAL_WIDTH / 10, 0);
         mountains = new Background();
-        mountains.setVector(3, 0);
+        mountains.setVector(GameScreen.INITAL_WIDTH/ 20, 0);
         sky = new Background();
-        sky.setVector(1, 0);
+        sky.setVector(GameScreen.INITAL_WIDTH / 40, 0);
 
         drawMaster = new DrawMaster.Builder()
                 .addStrategy(clouds, BasicImageStrategies.fullScreenDraw(Images.CLOUD_BACKGROUND))
@@ -50,11 +51,11 @@ public class MainMenuState implements State {
     }
 
     @Override
-    public void update() {
-        clouds.update();
-        mountains.update();
-        sky.update();
-        randomBallList.parallelStream().forEach(Entity::update);
+    public void update(double delta) {
+        clouds.update(delta);
+        mountains.update(delta);
+        sky.update(delta);
+        randomBallList.parallelStream().forEach(randomBall -> randomBall.update(delta));
     }
 
     @Override

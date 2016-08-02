@@ -49,8 +49,8 @@ public class StateController {
         }
     }
 
-    public void update() {
-        getState().update();
+    public void update(double delta) {
+        getState().update(delta);
     }
 
     public void draw(Graphics2D g) {

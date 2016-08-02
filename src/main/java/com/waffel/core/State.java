@@ -8,7 +8,7 @@ import java.awt.*;
 public interface State {
     void init();
 
-    void update();
+    void update(double delta);
 
     void draw(Graphics2D g);
 }

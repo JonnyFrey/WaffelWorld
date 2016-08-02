@@ -8,8 +8,8 @@ import com.waffel.core.GameScreen;
 public class Background extends Entity {
 
     @Override
-    public void update() {
-        super.update();
+    public void update(double delta) {
+        super.update(delta);
         if (x > getWidth()) {
             x = -getWidth();
         }

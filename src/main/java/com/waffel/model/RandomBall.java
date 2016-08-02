@@ -10,7 +10,7 @@ public class RandomBall extends Entity {
     public RandomBall() {
         this.x = (int) (Math.random() * GameScreen.INITAL_WIDTH);
         this.y = (int) (Math.random() * GameScreen.INITAL_HEIGHT);
-        setVector((int) (Math.random() * 10), (int) (Math.random() * 10));
+        setVector(Math.random() * 500, Math.random() * 500);
     }
 
     @Override
@@ -24,8 +24,8 @@ public class RandomBall extends Entity {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(double delta) {
+        super.update(delta);
         if (x > GameScreen.INITAL_WIDTH - getWidth()) {
             x = (double) GameScreen.INITAL_WIDTH - getWidth();
             setVector(-speedX, speedY);

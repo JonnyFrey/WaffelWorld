@@ -1,6 +1,7 @@
 package com.waffel.view;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,7 +32,11 @@ public enum Images {
 
 
     public BufferedImage loadImage() throws IOException {
-        return ImageIO.read(Files.newInputStream(Paths.get("src/main/resources/", location)));
+
+        BufferedImage image = ImageIO.read(Files.newInputStream(Paths.get("src/main/resources/", location)));
+        BufferedImage convertedImage = getCompatableImage(image.getWidth(), image.getHeight());
+        convertedImage.getGraphics().drawImage(image, 0, 0, null);
+        return convertedImage;
     }
 
     public BufferedImage[][] loadSpriteSheet() throws IOException {
@@ -43,6 +48,14 @@ public enum Images {
             for (int j = 0; j < w; j++)
                 spriteSheet[i][j] = fullImage.getSubimage(j * width, i * height, width, height);
         return spriteSheet;
+    }
+
+    public static BufferedImage getCompatableImage(int width, int height) {
+        GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
+        BufferedImage image = config.createCompatibleImage(width, height, Transparency.TRANSLUCENT);
+        return image;
     }
 
 }

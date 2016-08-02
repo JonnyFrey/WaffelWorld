@@ -24,47 +24,43 @@ public class GameLoop {
     }
 
     public void drawController(Graphics2D g) {
-        if (lock.tryLock()) {
             controller.draw(g);
-            lock.unlock();
-        }
     }
 
-    private static ConstantRunnable<GameLoop> getGameLoopRunnable() {
-        GameLoop gameLoop = new GameLoop();
-        return new ConstantRunnable<>(FPS, gameLoop1 -> {
-            gameLoop.lock.lock();
-            gameLoop.controller.update();
-            gameLoop.lock.unlock();
-        }, gameLoop);
+    private static ConstantRunnable getGameLoopRunnable(final GameLoop gameLoop) {
+        return new ConstantRunnable(FPS, (runnable) -> {
+            gameLoop.controller.update(runnable.getDelta());
+        });
     }
 
-    private static ConstantRunnable<GameScreen> getGraphicRunnable(GameLoop gameLoop) {
-        GameScreen gameScreen = new GameScreen(gameLoop);
-        return new ConstantRunnable<>(FPS, gameScreen1 -> {
-            Graphics2D g = gameScreen1.getGraphics();
-            gameScreen1.getGameLoop().drawController(g);
-            gameScreen1.drawToScreen();
+    private static ConstantRunnable getGraphicRunnable(final GameScreen screen, final GameLoop gameLoop) {
+        return new ConstantRunnable(FPS, runnable -> {
+            Graphics2D g = screen.getGraphics();
+            gameLoop.drawController(g);
+            screen.drawToScreen();
             g.dispose();
-        }, gameScreen);
+        });
     }
 
     public static void main(String[] args) {
-        ConstantRunnable<GameLoop> gameLoopConstantRunnable = getGameLoopRunnable();
-        ConstantRunnable<GameScreen> gameScreenConstantRunnable =
-                getGraphicRunnable(gameLoopConstantRunnable.getContex());
+        GameLoop gameLoop = new GameLoop();
+        GameScreen gameScreen = new GameScreen();
+        ConstantRunnable gameLoopConstantRunnable = getGameLoopRunnable(gameLoop);
+        ConstantRunnable gameScreenConstantRunnable =
+                getGraphicRunnable(gameScreen, gameLoop);
 
-        gameLoopConstantRunnable.enableLogging(60);
-        gameScreenConstantRunnable.enableLogging(60);
+        gameLoopConstantRunnable.setName("Loop");
+        gameScreenConstantRunnable.setName("Screen");
 
-        gameScreenConstantRunnable.getContex()
-                .addConstantRunnable(gameScreenConstantRunnable)
+        gameScreen.addConstantRunnable(gameScreenConstantRunnable)
                 .addConstantRunnable(gameLoopConstantRunnable);
 
-        ExecutorService service = Executors.newFixedThreadPool(2);
-        service.submit(gameLoopConstantRunnable);
-        service.submit(gameScreenConstantRunnable);
-        service.shutdown();
+        Thread gameLoopThread = new Thread(gameLoopConstantRunnable);
+        Thread gameScreenThread = new Thread(gameScreenConstantRunnable);
+        gameLoopThread.setName("GameLoop");
+        gameScreenThread.setName("GameScreen");
+        gameLoopThread.start();
+        gameScreenThread.start();
     }
 
 }

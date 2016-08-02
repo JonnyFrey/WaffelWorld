@@ -2,6 +2,7 @@ package com.waffel.core;
 
 import com.beust.jcommander.internal.Lists;
 import com.waffel.util.ConstantRunnable;
+import com.waffel.view.Images;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +25,6 @@ public class GameScreen {
 
     private static List<ConstantRunnable> killThreads = Lists.newArrayList();
 
-    private GameLoop gameLoop;
     private BufferedImage image;
 
     static {
@@ -42,13 +42,12 @@ public class GameScreen {
         });
     }
 
-    public GameScreen(GameLoop gameLoop) {
+    public GameScreen () {
         FRAME.setVisible(true);
         MAIN_SCREEN.setFocusable(true);
         MAIN_SCREEN.requestFocus();
 
-        image = new BufferedImage(INITAL_WIDTH, INITAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        this.gameLoop = gameLoop;
+        image = Images.getCompatableImage(INITAL_WIDTH, INITAL_HEIGHT);
     }
 
     public void drawToScreen() {
@@ -66,9 +65,5 @@ public class GameScreen {
     public GameScreen addConstantRunnable(ConstantRunnable runnable) {
         killThreads.add(runnable);
         return this;
-    }
-
-    public GameLoop getGameLoop() {
-        return gameLoop;
     }
 }

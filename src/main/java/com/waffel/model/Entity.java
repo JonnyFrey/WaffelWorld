@@ -40,8 +40,9 @@ public abstract class Entity implements Drawable {
         this.speedY = speedY;
     }
 
-    public void update() {
-        x += speedX;
-        y += speedY;
+    public void update(double delta) {
+        double second = delta / 1000;
+        x += (speedX * second);
+        y += (speedY * second);
     }
 }
