@@ -34,6 +34,7 @@ public class GameScreen {
         FRAME.setResizable(true);
         FRAME.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         FRAME.setLocationRelativeTo(null);
+        MAIN_SCREEN.addKeyListener(Keyboard.getInstence());
         FRAME.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -47,7 +48,6 @@ public class GameScreen {
         FRAME.setVisible(true);
         MAIN_SCREEN.setFocusable(true);
         MAIN_SCREEN.requestFocus();
-        FRAME.addKeyListener(Keyboard.getInstence());
 
         image = new BufferedImage(INITAL_WIDTH, INITAL_HEIGHT, BufferedImage.TYPE_INT_RGB);
         this.gameLoop = gameLoop;
