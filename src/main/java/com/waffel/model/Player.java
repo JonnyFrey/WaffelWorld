@@ -1,6 +1,6 @@
 package com.waffel.model;
 
-import com.waffel.input.KeyActions;
+import com.waffel.input.KeyBinder;
 
 /**
  * Created by yosephsa on 8/2/16.
@@ -20,21 +20,21 @@ public class Player extends Entity{
     @Override
     public void update() {
         int x, y;
-        if(KeyActions.getInstance().isActionActive(KeyActions.Action.MV_FORWARD))
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_FORWARD))
             y = -walkingSpeed;
-        else if(KeyActions.getInstance().isActionActive(KeyActions.Action.MV_BACKWARD))
+        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_BACKWARD))
             y = walkingSpeed;
         else
             y = 0;
 
-        if(KeyActions.getInstance().isActionActive(KeyActions.Action.MV_RIGHT))
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_RIGHT))
             x = walkingSpeed;
-        else if(KeyActions.getInstance().isActionActive(KeyActions.Action.MV_LEFT))
+        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_LEFT))
             x = -walkingSpeed;
         else
             x = 0;
 
-        if(KeyActions.getInstance().isActionActive(KeyActions.Action.MV_BOOST)) {
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_BOOST)) {
             x *= 2;
             y *= 2;
         }
