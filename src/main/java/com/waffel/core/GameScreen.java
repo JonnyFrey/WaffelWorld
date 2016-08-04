@@ -1,6 +1,7 @@
 package com.waffel.core;
 
 import com.beust.jcommander.internal.Lists;
+import com.waffel.input.Keyboard;
 import com.waffel.util.ConstantRunnable;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class GameScreen {
         FRAME.setResizable(true);
         FRAME.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         FRAME.setLocationRelativeTo(null);
+        MAIN_SCREEN.addKeyListener(Keyboard.getInstence());
         FRAME.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
