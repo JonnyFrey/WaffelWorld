@@ -74,6 +74,18 @@ public class KeyBinder {
     }
 
     /**
+     * Removes the given bidning and returns true if the binding exists. If not then false is returned.
+     * @param name The binding name/identifier
+     * @return If successfully removed.
+     */
+    public boolean removeBinding(String name) {
+        if(!bindings.containsKey(name))
+            return false;
+        bindings.remove(name);
+        return true;
+    }
+
+    /**
      * Retrieves the keys for a given binding name. If binding name is not registered with any keys it will return null.
      * @param name The binding name.
      * @return An array of the ascii values of the keys that belong to this binding.
