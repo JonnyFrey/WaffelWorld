@@ -20,21 +20,21 @@ public class Player extends Entity{
     @Override
     public void update() {
         int x, y;
-        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_FORWARD))
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.MV_FORWARD))
             y = -walkingSpeed;
-        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_BACKWARD))
+        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.MV_BACKWARD))
             y = walkingSpeed;
         else
             y = 0;
 
-        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_RIGHT))
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.MV_RIGHT))
             x = walkingSpeed;
-        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_LEFT))
+        else if(KeyBinder.getInstance().isBindingActive(KeyBinder.MV_LEFT))
             x = -walkingSpeed;
         else
             x = 0;
 
-        if(KeyBinder.getInstance().isBindingActive(KeyBinder.Binding.MV_BOOST)) {
+        if(KeyBinder.getInstance().isBindingActive(KeyBinder.MV_BOOST)) {
             x *= 2;
             y *= 2;
         }
